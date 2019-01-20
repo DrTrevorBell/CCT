@@ -1,0 +1,833 @@
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+<title>HVDR HBV Co-ordinate Conversion Tool (CCT)</title>
+<link rel="stylesheet" type="text/css" href="/res/hvdr.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<style type="text/css">
+.hidden { visibility: hidden; }
+.unhidden { visibility: visible; }
+td { text-align : center; }
+td.action { background: darkorange; }
+
+td.core { background: forestgreen; }
+td.x { background: #BBBB00; }
+td.surface { background: magenta; }
+td.polymerase { background: red; }
+td.full { background: cornflowerblue; }
+
+input.coreBox { text-align:center; background:forestgreen; color:darkslategrey; font-weight:bold; }
+input.xBox { text-align:center; background:#BBBB00; color:darkslategrey; font-weight:bold; }
+input.surfaceBox { text-align:center; background:magenta; color:darkslategrey; font-weight:bold; }
+input.polymeraseBox { text-align:center; background:red; color:darkslategrey; font-weight:bold; }
+input.fullBox { text-align:center; background:cornflowerblue; color:darkslategrey; font-weight:bold; }
+
+td.queryCentre { background: lightgreen; }
+td.queryLeft { background: lightgreen; text-align: left; }
+td.results1 { background: darkorange; text-align: center; }
+input.results2 { text-align:center; background:orange; color:#303030; font-weight:bold; }
+fieldset { width: 75%; }
+input.aminoacid1 { text-align:center; background:lightblue; color:darkslategrey; font-weight:bold; } 
+input.aminoacid2 { text-align:center; background:#ffff99; color:darkslategrey; font-weight:bold; }
+input.aminoacid3 { text-align:center; background:violet; color:darkslategrey; font-weight:bold; }
+input.nucleotide { text-align:center; }
+div.instructions { font-family:monospace; }
+a:focus { outline: 0; }
+em.i { font-style:oblique; font-weight:normal; text-decoration:none; }
+div.b { font-style:normal; font-weight:bold; text-decoration:none; }
+div.error { font-style:normal; font-weight:bold; text-decoration:none; color:red; background: yellow; }
+legend { font-weight:bold; padding:0.2em 0.5em; border:1px solid green; color:green; font-size:120%; font-family:monospace; background:lightgreen; }
+<!-- http://www.pixy.cz/blogg/clanky/css-fieldsetandlabels.html -->
+</style>
+
+<script type="text/javascript">
+
+ var numRegions = parseInt(14);
+ var circleCentre = parseInt(320);
+ var markerLength = parseInt(300);
+ var circleSize = parseInt(20);
+
+ // http://stackoverflow.com/a/10965203/580010
+ var div = document.createElement("div");
+ div.innerHTML = "<!--[if lt IE 9]><i></i><![endif]-->";
+ var isIeLessThan9 = (div.getElementsByTagName("i").length == 1);
+ if (isIeLessThan9) {
+     alert("At least version 9 of Internet Explorer required.");
+ }
+
+function checkMode()
+{
+	if (document.getElementById('qmodeaa').checked == true)
+	{
+		document.getElementById('qoffsetrel').checked = true;
+		document.getElementById('qoffsetrel').disabled = true;
+		document.getElementById('qoffsetabs').disabled = true;
+	}
+	else
+	{
+	    document.getElementById('qoffsetrel').disabled = false;
+	    document.getElementById('qoffsetabs').disabled = false;
+	}
+}
+
+function activateEdit(pp)
+{
+     for (var j = 1; j < numRegions+1 ; j++)
+     {
+	 document.getElementById('resnta'+j).value = "";
+	 document.getElementById('resntr'+j).value = "";
+	 document.getElementById('resaar'+j).value = "";
+	 document.getElementById('rescof'+j).value = "";
+
+	item = document.getElementById('qpos'+j);
+	if (j != pp)
+	{
+		item.value = 0;
+		item.disabled = true;
+	}
+	else
+	{
+		item.disabled = false;
+	}
+     }
+}
+
+function updateTable()
+{
+	var genotypeT = document.getElementById('genotype');
+	var genotype = genotypeT.options[genotypeT.selectedIndex].value;
+
+	document.getElementById('genotype').style.backgroundColor = "white";
+	document.getElementById('l1').style.backgroundColor="white";
+
+	function setValues1(l1, s1, e1, s2, e2, s3, e3, s4, e4, s5, e5, s6, e6, s7, e7, s8, e8, s9, e9, s10, e10, s11, e11, s12, e12, s13, e13, s14, e14)
+     {
+		item = document.getElementById('l1');
+		item.value = l1;
+		item = document.getElementById('s1');
+		item.value = s1;
+		item = document.getElementById('e1');
+		item.value = e1;
+		item = document.getElementById('s2');
+		item.value = s2;
+		item = document.getElementById('e2');
+		item.value = e2;
+		item = document.getElementById('s3');
+		item.value = s3;
+		item = document.getElementById('e3');
+		item.value = e3;
+		item = document.getElementById('s4');
+		item.value = s4;
+		item = document.getElementById('e4');
+		item.value = e4;
+		item = document.getElementById('s5');
+		item.value = s5;
+		item = document.getElementById('e5');
+		item.value = e5;
+		item = document.getElementById('s6');
+		item.value = s6;
+		item = document.getElementById('e6');
+		item.value = e6;
+		item = document.getElementById('s7');
+		item.value = s7;
+		item = document.getElementById('e7');
+		item.value = e7;
+		item = document.getElementById('s8');
+		item.value = s8;
+		item = document.getElementById('e8');
+		item.value = e8;
+		item = document.getElementById('s9');
+		item.value = s9;
+		item = document.getElementById('e9');
+		item.value = e9;
+		item = document.getElementById('s10');
+		item.value = s10;
+		item = document.getElementById('e10');
+		item.value = e10;
+		item = document.getElementById('s11');
+		item.value = s11;
+		item = document.getElementById('e11');
+		item.value = e11;
+		item = document.getElementById('s12');
+		item.value = s12;
+		item = document.getElementById('e12');
+		item.value = e12;
+		item = document.getElementById('s13');
+		item.value = s13;
+		item = document.getElementById('e13');
+		item.value = e13;
+		item = document.getElementById('s14');
+		item.value = s14;
+		item = document.getElementById('e14');
+		item.value = e14;
+	}
+
+	switch(genotype)
+     {
+
+	 case 'A' : setValues1(3221, 1814,1900, 1901,2458, 1814,2458, 2307,1623, 2854,3210, 3211,154, 155,835, 2854,835, 1374,1838, 2307,2843, 2844,129, 130,1161, 1162,1620, 1,3221);
+                    break;
+	 case 'B' : setValues1(3215, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3204, 3205,154, 155,835, 2848,835, 1374,1838, 2307,2837, 2838,129, 130,1161, 1162,1620, 1,3215);
+                    break;
+	 case 'C' : setValues1(3215, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3204, 3205,154, 155,835, 2848,835, 1374,1838, 2307,2837, 2838,129, 130,1161, 1162,1620, 1,3215);
+                    break;
+	 case 'D' : setValues1(3182, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3171, 3172,154, 155,835, 2848,835, 1374,1838, 2307,2837, 2838,129, 130,1161, 1162,1620, 1,3182);
+                    break;
+	 case 'E' : setValues1(3212, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3201, 3202,154, 155,835, 2848,835, 1374,1838, 2307,2837, 2838,129, 130,1161, 1162,1620, 1,3212);
+                    break;
+	 case 'F' : setValues1(3215, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3204, 3205,154, 155,835, 2848,835, 1374,1838, 2307,2837, 2838,129, 130,1161, 1162,1620, 1,3215);
+                    break;
+	 case 'G' : setValues1(3248, 1814,1900, 1901,2488, 1814,2488, 2343,1623, 2884,3237, 3238,154, 155,835, 2884,835, 1374,1838, 2343,2873, 2874,129, 130,1161, 1162,1620, 1,3248);
+                    break;
+	 case 'H' : setValues1(3215, 1814,1900, 1901,2452, 1814,2452, 2307,1623, 2848,3204, 3205,154, 155,835, 2848,835, 1374,1838, 0000,0000, 0000,000, 000,0000, 0000,0000, 1,3215);
+                    break;
+	 case 'I' : setValues1(0000, 0000,0000, 0000,0000, 0000,0000, 0000,0000, 0000,0000, 0000,000, 000,000, 0000,000, 0000,0000, 0000,0000, 0000,000, 000,0000, 0000,0000, 0,0000);
+                    break;
+	 case 'U' : setValues1(0000, 0000,0000, 0000,0000, 0000,0000, 0000,0000, 0000,0000, 0000,000, 000,000, 0000,000, 0000,0000, 0000,0000, 0000,000, 000,0000, 0000,0000, 0,0000);
+                    break;
+	}
+
+     updateAminoAcids();
+
+     for (var j = 1; j < numRegions+1 ; j++)
+     {
+	 if (document.getElementById('rb'+String(j)).checked == true)
+	 {
+ 	     qregion = j;
+	 }
+     }
+
+     activateEdit(parseInt(qregion));
+
+     ctx.clearRect(0, 0, c.width, c.height);
+
+}
+
+function aant(nts)
+{
+	remainder = (nts) % 3;
+        aas = Math.floor(nts / 3);
+
+        if (remainder != 0)
+        {
+                aas = aas.toString() + '+' + remainder.toString()+'nt';
+        }
+                else
+                {
+                        aas = aas.toString();
+                }
+	return aas;
+}
+
+function updateAminoAcids()
+// Modified to also update NT count (variable distance)
+{
+	function updateRow(aa)
+	{
+            var start = parseInt(document.getElementById('s'+aa).value);
+            var end = parseInt(document.getElementById('e'+aa).value);
+            var length = parseInt(document.getElementById('l1').value);
+
+            if (isNaN(start) || start < 0)
+            {
+                    document.getElementById('s'+aa).value = 0;
+                    return;
+            }
+
+            if (isNaN(end) || end < 0)
+            {
+                    document.getElementById('e'+aa).value = 0;
+                    return;
+            }
+
+            if (end < start)
+            {
+                    distance = length - start + 1 + end;
+            }
+                    else
+                    {
+                            distance = end - start + 1;
+                    }
+
+	    aacount = aant(distance);
+
+            aaout = document.getElementById('aa'+aa);
+            aaout.value = aacount;
+
+	    document.getElementById('nt'+aa).value = distance;
+	}
+
+	for (var j = 1; j < numRegions+1 ; j++)
+	{
+		updateRow(j);
+	}
+
+}
+
+<!-- Check that values are numbers and end > start -->
+<!-- Note about amino acid output format: 29/0 and note that if end < start, then goes around; if equal, one base included -->
+<!-- Check length is a number  -->
+
+function updateLength()
+{
+	var length = parseInt(document.getElementById('l1').value);
+
+	if (isNaN(length) || length <= 0)
+	{
+		alert('Bad length. Table will now reset.');
+		updateTable();
+		return false;
+	}
+
+       updateAminoAcids();
+       <!-- Should not trigger if editing back to original? May have changed values elsewhere, though -->
+       document.getElementById('genotype').style.backgroundColor = '#ffff99';
+       document.getElementById('l1').style.backgroundColor = '#ffff99';
+       alert("Potentially inconsistent data. Update regions manually.");
+}
+
+// Formatting //
+
+ function Calculate()
+ {
+
+     // http://stackoverflow.com/a/14794066/580010
+     function isInt(value)
+ {
+     return !isNaN(value) &&
+	    parseInt(Number(value)) == value &&
+	    !isNaN(parseInt(value, 10));
+ } // function isInt
+
+     function wrap(p)
+     {
+	 len = parseInt(document.getElementById('l1').value)
+	 p = parseInt(p)
+	 out = p
+	 if (p < 0)
+	 {
+	     out = p + len
+	 }
+	 if (p > len)
+	 {
+	     out = p - len
+	 }
+	 if (p == 0)
+	 {
+	     out = 0
+	 }
+	 return out;
+     } // function wrap
+
+     document.getElementById('error').textContent = "";
+     
+     for (var j = 1; j < numRegions+1 ; j++)
+     {
+	 document.getElementById('resnta'+j).value = "";
+	 document.getElementById('resntr'+j).value = "";
+	 document.getElementById('resaar'+j).value = "";
+	 document.getElementById('rescof'+j).value = "";
+     }
+
+     qpos = 0;
+     qregion = 0;
+
+     for (var j = 1; j < numRegions+1 ; j++)
+     {
+	 tt = document.getElementById('qpos'+j);
+	 if (tt.value > 0)
+	 {
+	     qpos = tt.value;
+	     qregion = j;
+	 }
+     }
+
+     if (qregion == numRegions && document.getElementById('qmodeaa').checked == true)
+     {
+	 document.getElementById('error').textContent = "Error: AA Query Mode is not compatible with Full Region.";
+	 return false;
+     }
+     
+     if (isInt(qpos) == false || qpos <= 0)
+     {
+	 document.getElementById('error').textContent = "Error: Query position value must be a positive integer.";
+	 return false;
+     }
+
+     // nucleotide absolute
+     if (document.getElementById('qmodent').checked == true && document.getElementById('qoffsetabs').checked == true)
+     {
+	 qqpos = parseInt(qpos);
+	 tempStart = parseInt(document.getElementById('s'+String(qregion)).value)
+	 tempEnd = parseInt(document.getElementById('e'+String(qregion)).value)
+         tempLen =  parseInt(document.getElementById('l1').value)
+
+	     if (tempStart < tempEnd && qqpos >= tempStart && qqpos <= tempEnd && qqpos <= tempLen && qqpos >= 0)
+	 {
+	     // pass
+	 }
+	 else if ((tempStart > tempEnd) && (qqpos >= tempStart || qqpos <= tempEnd) && qqpos <= tempLen && qqpos >= 0)
+	 {
+	     // pass
+	 }
+	 else
+	 {
+	     document.getElementById('error').textContent = "Error: Query position out of range.";
+	     return false;
+	 }
+     }
+
+     // nucleotide relative
+     if (document.getElementById('qmodent').checked == true && document.getElementById('qoffsetrel').checked == true)
+     {
+	 if (qpos > parseInt(document.getElementById('nt'+String(qregion)).value))
+	 {
+	     document.getElementById('error').textContent = "Error: Query position out of range.";
+	     return false;
+	 }
+ 	 qqpos = wrap(parseInt(qpos) + parseInt(document.getElementById('s'+qregion).value) - 1);
+     }
+
+     // amino acid relative
+     if (document.getElementById('qmodeaa').checked == true && document.getElementById('qoffsetrel').checked == true)
+     {
+	 if (qpos > parseInt(document.getElementById('aa'+String(qregion)).value))
+	 {
+	     document.getElementById('error').textContent = "Error: Query position out of range.";
+	     return false;
+	 }
+	 qqpos = wrap(parseInt(qpos) * 3 + parseInt(document.getElementById('s'+qregion).value) - 3);
+     }
+
+     var inRegions = [];
+     for (var j = 1; j < numRegions+1 ; j++)
+     {
+	     start = parseInt(document.getElementById('s'+j).value)
+	     end = parseInt(document.getElementById('e'+j).value)
+	     len = parseInt(document.getElementById('l1').value)
+	     if (((start > end) && ((qqpos >= start && qqpos <= len) || (qqpos <= end))) || (qqpos >= start && qqpos <= end))
+	 {
+	     inRegions.push(j)
+	 }
+     }
+
+     for (var j = 0; j < inRegions.length ; j++)
+     {
+	 regionStart = parseInt(document.getElementById('s'+inRegions[j]).value);
+	 // The following does not work for PreS2
+	 codonOffset = (wrap(qqpos - regionStart) % 3) + 1;
+	 // regionName = document.getElementById('region'+inRegions[j]).textContent;
+	 NTrel = wrap(qqpos - regionStart + 1);
+ 	 // AArel = wrap(Math.floor((qqpos - regionStart) / 3) + 1);
+	 // AArel = wrap(Math.floor(Math.abs(qqpos - regionStart) / 3) + 1);
+	 AArel = parseInt(Math.trunc((NTrel-1) / 3) + 1);
+
+	 document.getElementById('resnta'+String(inRegions[j])).value = qqpos;
+	 document.getElementById('resntr'+String(inRegions[j])).value = NTrel;
+	 document.getElementById('resaar'+String(inRegions[j])).value = AArel;
+	 document.getElementById('rescof'+String(inRegions[j])).value = codonOffset;
+
+	 // alert(regionName + ' ' + qqpos + ' ' + NTrel + ' ' + AArel + ' ' + codonOffset);
+     }
+
+     Draw();
+     
+ } // function Calculate
+
+ function makeCanvas()
+ {
+     c=document.getElementById("myCanvas");
+     if (c.getContext)
+     {
+	 ctx=c.getContext("2d");
+	 ctx.clearRect(0, 0, c.width, c.height);
+     }
+     else
+     {
+	 alert("Canvas (HTML 5) not supported.");
+     }
+}
+ 
+function Draw()
+ {
+     function toRadians(coord,len)
+     {
+         return ((parseFloat(coord/len) * 360.0 - 90.0) * Math.PI / 180);
+     }
+     
+     colList = ["ForestGreen", "ForestGreen", "ForestGreen", "Red", "Magenta", "Magenta", "Magenta", "Magenta", "#BBBB00", "Red", "Red", "Red", "Red", "Blue"]
+     plotOrder = [1,2,3,9,5,6,7,8,10,11,12,13,4,14];
+     plotAlpha = [1,1,0.5,0.5,1,1,1,0.5,1,1,1,1,1];
+
+     ctx.clearRect(0, 0, c.width, c.height);
+     // ctx.font = "14px Arial";
+     ctx.fillText("EcoR1", 305,15);
+
+     for (var j = 1; j < numRegions+1 ; j++)		 
+     {
+	 jj = plotOrder[j-1];
+	 ll = parseInt(document.getElementById('l1').value);
+	 ss = parseInt(document.getElementById('s'+jj).value);
+	 ee = parseInt(document.getElementById('e'+jj).value);
+	 ctx.beginPath();
+         ctx.globalAlpha = plotAlpha[jj-1];
+	 ctx.arc(circleCentre,circleCentre,j*circleSize,toRadians(ss,ll), toRadians(ee,ll));
+	 ctx.strokeStyle = colList[jj-1];
+	 ctx.lineWidth = 12;
+         ctx.globalAlpha = plotAlpha[jj-1];
+	 ctx.stroke();
+     }
+     ctx.closePath();
+
+     ctx.beginPath();
+     ctx.lineWidth = 2;
+     ctx.strokeStyle = "Black";
+     ctx.globalAlpha = 0.75;
+     ctx.moveTo(circleCentre,circleCentre);
+     // These co-ordinates are radians, but are 90 degrees left/back/anti-clockwise from the arc ones
+     // pi is the "vertical" position here; in arc, pi is horizontal to the right
+     // Therefore, subtract 0.5 pi from co-ordinates we use;
+     // Or just to use HBV co-ordinate as the radian, as it also starts "vertical".
+     queryAngle = qqpos/ll * 360 * Math.PI / 180 - 0.5 * Math.PI;
+     x = parseInt(circleCentre+(markerLength * Math.cos(queryAngle)));
+     y = parseInt(circleCentre+(markerLength * Math.sin(queryAngle)));
+     ctx.lineTo(x, y);
+     ctx.stroke();
+
+ } // function Draw
+
+</script>
+
+<noscript>
+<div class="dotted_red" style="border-width:1.5px; color:darkred; font-size:12px; font-family:monospace;" align="center">
+This site works better with JavaScript enabled. It is strongly recommended that you enable JavaScript and <a href="">reload</a> the page.
+</div>
+</noscript>
+</head>
+<body onload="makeCanvas(); updateTable(); checkMode();">
+  <h1>HVDR Online Tools</h1>
+  <div class="note">Hepatitis Virus Diversity Research <a href="http://www.wits.ac.za/health/hvdru" target="_blank">Unit</a>, University of the Witwatersrand</div>
+
+
+<h2>HBV Co-ordinate Conversion Tool (CCT)</h2>
+
+<br>
+
+<!--
+<div class="dotted_red" style="border-width:1.5px; color:darkred; font-size:16px; font-family:monospace; font-weight:bold;" align="center">
+This site may be offline due to essential network upgrades on Sunday 03 and Monday 04 September 2017.
+</div><br>
+-->
+
+<div align="center">
+<fieldset>
+<legend>Specify genotype and query parameters</legend>
+
+<br>
+
+<table border="1" width="100%">
+
+    <tr>
+	<td class="queryCentre"><div class="b">Genotype and Length</div></td>
+	<td class="queryCentre"><div class="b">Query Mode</div></td>
+	<td class="queryCentre"><div class="b">Co-Ordinate Mode</div></td>
+	<td class="action"><div class="b">Action</div></td>
+    </tr>
+    
+    <td class="queryCentre">
+<select name="genotype" id="genotype" onchange="javascript:updateTable();" onkeyup="javascript:updateTable();">
+<option value="A">Genotype A</option>
+<option value="B">Genotype B</option>
+<option value="C">Genotype C</option>
+<option value="D">Genotype D</option>
+<option value="E">Genotype E</option>
+<option value="F">Genotype F</option>
+<option value="G">Genotype G</option>
+<option value="H">Genotype H</option>
+<option value="I">Genotype I</option>
+<option value="-">---</option>
+</select>
+<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="l1" name="length" onchange=javascript:updateLength()>
+  <!-- <input id="reset" type="button" value="Reset" onclick="javascript:updateTable();"> -->
+  <!-- Confusing to include this -- user will press this after changing length -->
+    </td>
+
+    	<td class="queryLeft">
+	    <input type="radio" id="qmodeaa" name="qmode" value="aa"   checked onclick="checkMode();">Amino Acid (AA)<br>
+	    <input type="radio" id="qmodent" name="qmode" value="nt" unchecked onclick="checkMode();">Nucleotide (NT)
+	</td>
+
+	<td class="queryLeft">
+	    <input type="radio" id="qoffsetabs" name="qoffset" value="absolute"   checked>Absolute<br>
+	    <input type="radio" id="qoffsetrel" name="qoffset" value="relative" unchecked>Relative
+	</td>
+	<td class="action">
+	    <input id="calculate" id="calc1" type="button" value="Calculate!" onclick="javascript:Calculate();">
+	    <br><div class="error" id="error"></div>
+	</td>
+</tr>
+
+</table>
+
+<br>
+
+<table border="1" width="100%">
+
+<tr>
+<td>Region</td>
+<td>Start<br>Co-ord.</td>
+<td>End<br>Co-ord.</td>
+<td>NT<br>Count</td>
+<td>AA<br>Count</td>
+<td class="queryCentre">Query<br>Position</td>
+<td class="results1">NT<br>Absolute</td>
+<td class="results1">NT<br>Relative</td>
+<td class="results1">AA<br>Relative</td>
+<td class="results1">Codon<br>Offset</td>
+</tr>
+
+<tr>
+<td class="core"><div id="region1" name="region1">Pre-Core</div></td>
+<td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s1" name="s1" onchange=javascript:updateAminoAcids()></td>
+<td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e1" name="e1" onchange=javascript:updateAminoAcids()></td>
+<td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="nt1" name="nt1" disabled></td>
+<td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="aa1" name="aa1" disabled></td>
+<td class="queryCentre"><input onclick="activateEdit(1);" id="rb1" type="radio" name="query" value="query1" unchecked >
+			<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos1" name="qpos1" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta1" name="resnta1" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr1" name="resntr1" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar1" name="resaar1" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof1" name="rescof1" disabled></td>
+</tr>
+
+<tr>
+<td class="core"><div id="region2" name="region2">Core</div></td>
+<td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s2" name="s2" onchange=javascript:updateAminoAcids()></td>
+<td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e2" name="e2" onchange=javascript:updateAminoAcids()></td>
+<td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="nt2" name="nt2" disabled></td>
+<td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="aa2" name="aa2" disabled></td>
+<td class="queryCentre"><input onclick="activateEdit(2);" id="rb2" type="radio" name="query" value="query2" unchecked>
+			<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos2" name="qpos2" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta2" name="resnta2" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr2" name="resntr2" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar2" name="resaar2" disabled></td>
+<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof2" name="rescof2" disabled></td>
+</tr>
+
+<tr>
+    <td class="core"><div id="region3" name="region3">Full Core</div></td>
+    <td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s3" name="s3" onchange=javascript:updateAminoAcids()></td>
+    <td class="core"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e3" name="e3" onchange=javascript:updateAminoAcids()></td>
+    <td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="nt3" name="nt3" disabled></td>
+    <td class="core"><input class="coreBox" type="text" size="4" maxlength="4" value="0" id="aa3" name="aa3" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(3);" id="rb3" type="radio" name="query" value="query3" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos3" name="qpos3" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta3" name="resnta3" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr3" name="resntr3" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar3" name="resaar3" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof3" name="rescof3" disabled></td>
+</tr>
+
+<tr>
+    <td class="x"><div id="region9" name="region9">X</div></td>
+    <td class="x"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s9" name="s9" onchange=javascript:updateAminoAcids()></td>
+    <td class="x"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e9" name="e9" onchange=javascript:updateAminoAcids()></td>
+    <td class="x"><input class="xBox" type="text" size="4" maxlength="4" value="0" id="nt9" name="nt9" disabled></td>
+    <td class="x"><input class="xBox" type="text" size="4" maxlength="4" value="0" id="aa9" name="aa9" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(9);" id="rb9" type="radio" name="query" value="query9" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos9" name="qpos9" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta9" name="resnta9" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr9" name="resntr9" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar9" name="resaar9" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof9" name="rescof9" disabled></td>
+</tr>
+
+<tr>
+    <td class="surface"><div id="region5" name="region5">PreS1</div></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s5" name="s5" onchange=javascript:updateAminoAcids();></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e5" name="e5" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="nt5" name="nt5" disabled></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="aa5" name="aa5" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(5);" id="rb5" type="radio" name="query" value="query5" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos5" name="qpos5" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta5" name="resnta5" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr5" name="resntr5" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar5" name="resaar5" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof5" name="rescof5" disabled></td>
+</tr>
+
+<tr>
+    <td class="surface"><div id="region6" name="region6">PreS2</div></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s6" name="s6" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e6" name="e6" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="nt6" name="nt6" disabled></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="aa6" name="aa6" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(6);" id="rb6" type="radio" name="query" value="query6" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos6" name="qpos6" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta6" name="resnta6" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr6" name="resntr6" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar6" name="resaar6" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof6" name="rescof6" disabled></td>
+</tr>
+
+<tr>
+    <td class="surface"><div id="region7" name="region7">Surface</div></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s7" name="s7" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e7" name="e7" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="nt7" name="nt7" disabled></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="aa7" name="aa7" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(7);" id="rb7" type="radio" name="query" value="query7" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos7" name="qpos7" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta7" name="resnta7" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr7" name="resntr7" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar7" name="resaar7" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof7" name="rescof7" disabled></td>
+</tr>
+
+<tr>
+    <td class="surface"><div id="region8" name="region8">Full Surface</div></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s8" name="s8" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e8" name="e8" onchange=javascript:updateAminoAcids()></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="nt8" name="nt8" disabled></td>
+    <td class="surface"><input class="surfaceBox" type="text" size="4" maxlength="4" value="0" id="aa8" name="aa8" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(8);" id="rb8" type="radio" name="query" value="query8" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos8" name="qpos8" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta8" name="resnta8" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr8" name="resntr8" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar8" name="resaar8" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof8" name="rescof8" disabled></td>
+</tr>
+
+<tr>
+    <td class="polymerase"><div id="region10" name="region10">Pol TP</div></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s10" name="s10" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e10" name="e10" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="nt10" name="nt10" disabled></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="aa10" name="aa10" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(10);" id="rb10" type="radio" name="query" value="query10" unchecked>
+			    <input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos10" name="qpos10" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta10" name="resnta10" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr10" name="resntr10" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar10" name="resaar10" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof10" name="rescof10" disabled></td>
+</tr>
+
+<tr>
+    <td class="polymerase"><div id="region11" name="region11">Pol Spacer</div></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s11" name="s11" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e11" name="e11" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="nt11" name="nt11" disabled></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="aa11" name="aa11" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(11);" id="rb11" type="radio" name="query" value="query11" unchecked>
+			    <input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos11" name="qpos11" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta11" name="resnta11" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr11" name="resntr11" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar11" name="resaar11" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof11" name="rescof11" disabled></td>
+</tr>
+
+<tr>
+    <td class="polymerase"><div id="region12" name="region12">Pol RT</div></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s12" name="s12" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e12" name="e12" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="nt12" name="nt12" disabled></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="aa12" name="aa12" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(12);" id="rb12" type="radio" name="query" value="query12" unchecked>
+			    <input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos12" name="qpos12" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta12" name="resnta12" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr12" name="resntr12" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar12" name="resaar12" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof12" name="rescof12" disabled></td>
+</tr>
+
+<tr>
+    <td class="polymerase"><div id="region13" name="region13">Pol RNAseH</div></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s13" name="s13" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e13" name="e13" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="nt13" name="nt13" disabled></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="aa13" name="aa13" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(13);" id="rb13" type="radio" name="query" value="query13" unchecked>
+			    <input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos13" name="qpos13" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta13" name="resnta13" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr13" name="resntr13" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar13" name="resaar13" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof13" name="rescof13" disabled></td>
+</tr>
+
+<tr>
+    <td class="polymerase"><div id="region4" name="region4">Polymerase</div></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s4" name="s4" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e4" name="e4" onchange=javascript:updateAminoAcids()></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="nt4" name="nt4" disabled></td>
+    <td class="polymerase"><input class="polymeraseBox" type="text" size="4" maxlength="4" value="0" id="aa4" name="aa4" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(4);" id="rb4" type="radio" name="query" value="query4" unchecked>
+	<input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos4" name="qpos4" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta4" name="resnta4" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr4" name="resntr4" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar4" name="resaar4" disabled></td>
+	<td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof4" name="rescof4" disabled></td>
+</tr>
+
+<tr>
+    <td class="full"><div id="region14" name="region14">Full</div></td>
+    <td class="full"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="s14" name="s14" onchange=javascript:updateAminoAcids()></td>
+    <td class="full"><input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="e14" name="e14" onchange=javascript:updateAminoAcids()></td>
+    <td class="full"><input class="fullBox" type="text" size="4" maxlength="4" value="0" id="nt14" name="nt14" disabled></td>
+    <td class="full"><input class="fullBox" type="text" hidden size="4" maxlength="4" value="0" id="aa14" name="aa14" disabled></td>
+    <td class="queryCentre"><input onclick="activateEdit(14);" id="rb14" type="radio" name="query" value="query14" checked>
+			    <input class="nucleotide" type="text" size="4" maxlength="4" value="0" id="qpos14" name="qpos14"></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resnta14" name="resnta14" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resntr14" name="resntr14" disabled></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="resaar14" name="resaar14" disabled hidden></td>
+    <td class="results1"><input class="results2" type="text" size="4" maxlength="4" value="" id="rescof14" name="rescof14" disabled hidden></td>
+</tr>
+
+</table>
+
+Press "Tab" after changing values <input id="reset" type="button" value="Reset Table" onclick="javascript:updateTable();">
+
+</fieldset>
+
+<br>
+
+<div align="center";}><canvas id="myCanvas" width="640" height="640" style="border: 1px solid blue; background: ghostwhite;"></canvas></div>
+
+</div>
+
+<br>
+
+<div class="dotted_index"; align="center">
+&bull; &nbsp; <a href="/tools/index.html">Tools</a> Index &nbsp; &bull; &nbsp; Small <a href="/SmallGenomeTools/index.html">Genome</a> Tools Index &nbsp; &bull; &nbsp; HBV <a href="/alignments/index.html">Alignments</a> &nbsp; &bull; &nbsp; Book <a href="https://bit.ly/BioinformaticsChapterHBV">Chapter</a> &nbsp; &bull;
+</div>
+<br>
+<div class="dotted_red">
+
+<p class="compact">
+&bull; Please cite the paper describing the relevant tool if you use any results or output in a paper or presentation &bull;
+</p>
+
+<p class="compact">
+&bull; All tools and data are provided without any warranty &bull; Check all results carefully &bull;
+</p>
+
+<p class="compact">
+  &bull; Queries or comments to Dr Trevor Bell [Trevor.Bell (@) wits.ac.za] &bull;
+</p>
+
+<p class="compact">
+  &bull; Hand-coded in Emacs &bull;
+</p>
+
+</div>
+<br>
+
+<div class="last_modified">
+  Last modified Tuesday, 12-Sep-2017 15:26:23 SAST
+</div>
+
+</html>
+
+<!-- spaces in position input box -->
+
