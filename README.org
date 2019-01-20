@@ -1,5 +1,5 @@
 * CCT
-Hepatitis Bvirus co-ordinate Conversion Tool
+Hepatitis B virus Co-ordinate Conversion Tool
 
 Initial commit after publication, January 2019
 
@@ -10,3 +10,5 @@ https://www.tandfonline.com/doi/full/10.1080/23120053.2018.1558641
 The official implementation of the tool is available here:
 
 http://hvdr.bioinf.wits.ac.za/cct/
+
+The tool consists of a single HTML page (=index.html=) containing the JavaScript code and interface.
